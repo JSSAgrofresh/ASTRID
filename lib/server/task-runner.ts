@@ -5,6 +5,12 @@ import { projects } from "@/lib/data";
 import type { ChatResponse, ChatStep, TaskValidations } from "@/lib/types";
 import * as git from "./git-service";
 import { askOpenClaw } from "./openclaw-client";
+import {
+  pointDeveloperSandboxAt,
+  stripOpenClawBootstrapArtifacts,
+  DEVELOPER_AGENT_ID,
+  DEVELOPER_SANDBOX_WORKSPACE,
+} from "./sandbox-service";
 import { newTaskId, saveTask, toPublicTask, type StoredTask } from "./task-store";
 import { getTaskWorktreePath, resolveProjectWorkspace } from "./workspace";
 
@@ -12,10 +18,11 @@ import { getTaskWorktreePath, resolveProjectWorkspace } from "./workspace";
  * Orchestrates one isolated Git edit task:
  *
  *   validate project/workspace → check Git is clean → create an isolated
- *   worktree on a brand-new branch → ask OpenClaw to make the content edit
- *   *inside that worktree only* → verify real changes on disk (never trust
- *   the model's claim alone) → run lint/build if available → return a
- *   step-by-step, honest summary.
+ *   worktree on a brand-new branch → point the sandboxed "developer"
+ *   OpenClaw agent's Docker container at that worktree → ask it to make
+ *   the content edit *inside that container only* → verify real changes on
+ *   disk (never trust the model's claim alone) → run lint/build if
+ *   available → return a step-by-step, honest summary.
  *
  * Security model (two layers, and this file is honest with itself about
  * which is which):
@@ -25,15 +32,21 @@ import { getTaskWorktreePath, resolveProjectWorkspace } from "./workspace";
  *    diff, read-only remote check). There is no push/merge/reset/clean
  *    function to call, so this file structurally cannot perform them.
  *
- * 2. SOFT boundary — OpenClaw's own shell access. The agent used here has
- *    no sandbox (`sandbox: off`, confirmed against the live Gateway), so
- *    it *could* attempt something outside policy. The isolated worktree +
- *    branch contains the blast radius (nothing is pushed, nothing touches
- *    `main`, nothing touches the other project's workspace), and
- *    `remoteBranchExists` below independently verifies — after the fact —
- *    that the task branch was never pushed. This is not a substitute for
- *    real sandboxing; see the final report for what real enforcement
- *    would require.
+ * 2. HARD boundary (as of the "developer" sandbox) — the edit itself runs
+ *    inside a Docker container (`agents.entries.developer.sandbox`,
+ *    `mode: all`, `network: none`, `readOnlyRoot: true`, `capDrop: [ALL]`
+ *    — all confirmed live via `openclaw sandbox explain --agent
+ *    developer`) whose ONLY mount is this task's worktree at `/workspace`.
+ *    It cannot see `/home/kokes`, other projects, `~/.openclaw` (tokens,
+ *    other worktrees), `~/.ssh`, `~/.config/gh`, `/mnt/c`, or the Docker
+ *    socket — those simply are not mounted. `pointDeveloperSandboxAt`
+ *    below repoints and recreates that container for every task, so it
+ *    never retains a previous task's mount. The orchestrating "main" agent
+ *    is never asked to edit anything and keeps `sandbox: off` — it never
+ *    touches the host directly either way. `remoteBranchExists` below
+ *    still independently verifies — after the fact — that the task branch
+ *    was never pushed (push/commit/PR happen only in
+ *    `task-approval-service.ts`, entirely outside the sandbox).
  */
 
 const EDIT_TIMEOUT_MS = 150_000;
@@ -141,11 +154,12 @@ async function ensureDependencies(mainWorkspace: string, worktreeDir: string): P
 
 // --- OpenClaw edit prompt ---------------------------------------------
 
-function buildEditContext(projectName: string, worktreeDir: string, branch: string): string {
+function buildEditContext(projectName: string, branch: string): string {
   return [
     "Contexto de ASTRID:",
     `- Proyecto: ${projectName}`,
-    `- Workspace de trabajo para ESTA tarea (ya es un worktree Git aislado, en la branch "${branch}", creada por el servidor): ${worktreeDir}`,
+    `- Workspace de trabajo para ESTA tarea (worktree Git aislado, en la branch "${branch}", creada por el servidor): ${DEVELOPER_SANDBOX_WORKSPACE}`,
+    "- Estás corriendo dentro de un contenedor Docker aislado (sandbox) que solo tiene montado ese worktree. No hay red, ni acceso al resto del host, ni a otros proyectos, ni a credenciales.",
     "",
     "Política de esta etapa — EDICIÓN AISLADA, SOLO EN ESTE WORKTREE:",
     "- Puedes leer, buscar y EDITAR archivos dentro de esa ruta exacta.",
@@ -210,9 +224,23 @@ export async function runEditTask(request: EditTaskRequest): Promise<ChatRespons
   }
   steps.push({ label: `Branch ${branch} creada`, status: "completed" });
 
+  const sandboxOutcome = await pointDeveloperSandboxAt(worktreeDir);
+  if (!sandboxOutcome.ok) {
+    steps.push({ label: "Sandbox Developer preparado", status: "error" });
+    console.error("[task-runner] no se pudo preparar el sandbox del Developer:", sandboxOutcome.detail);
+    return {
+      message: `${sandboxOutcome.detail} La branch "${branch}" quedó creada (sin cambios) por si quieres revisarla o eliminarla.`,
+      type: "development",
+      status: "error",
+      steps,
+    };
+  }
+  steps.push({ label: "Sandbox Developer preparado (solo este worktree)", status: "completed" });
+
   const editOutcome = await askOpenClaw(request.message, {
-    contextHint: buildEditContext(projectName, worktreeDir, branch),
+    contextHint: buildEditContext(projectName, branch),
     timeoutMs: EDIT_TIMEOUT_MS,
+    agentId: DEVELOPER_AGENT_ID,
   });
 
   if (!editOutcome.ok) {
@@ -224,6 +252,15 @@ export async function runEditTask(request: EditTaskRequest): Promise<ChatRespons
       agent: "GitHub Copilot",
       steps,
     };
+  }
+
+  // Discard OpenClaw's own workspace-bootstrap files (AGENTS.md, SOUL.md,
+  // ...) before computing "ground truth" — see stripOpenClawBootstrapArtifacts.
+  const removedBootstrapFiles = await stripOpenClawBootstrapArtifacts(worktreeDir);
+  if (removedBootstrapFiles.length > 0) {
+    console.error(
+      `[task-runner] ignorados artefactos de bootstrap de OpenClaw ajenos a la tarea: ${removedBootstrapFiles.join(", ")}`,
+    );
   }
 
   // Ground truth, not the model's word: only real, on-disk changes count.

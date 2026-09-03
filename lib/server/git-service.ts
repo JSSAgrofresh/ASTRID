@@ -85,6 +85,17 @@ export async function getChangedFiles(cwd: string): Promise<string[]> {
     .map((line) => line.replace(/^[A-Z?!]{1,2}\s+/, "").trim());
 }
 
+/** Untracked (brand-new, unknown to Git) files only — the `??` lines from `git status --porcelain`. */
+export async function getUntrackedFiles(cwd: string): Promise<string[]> {
+  const result = await getStatusPorcelain(cwd);
+  if (!result.ok) return [];
+  return result.stdout
+    .split("\n")
+    .filter((line) => line.startsWith("??"))
+    .map((line) => line.slice(3).trim())
+    .filter(Boolean);
+}
+
 /** `git diff --stat HEAD` — short human-readable summary of the change. */
 export async function getDiffStat(cwd: string): Promise<string> {
   const result = await runGit(["diff", "--stat", "HEAD"], cwd);

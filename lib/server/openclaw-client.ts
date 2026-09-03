@@ -34,11 +34,18 @@ export interface AskOpenClawOptions {
   /** Extra context prepended to the message (e.g. selected project name). */
   contextHint?: string;
   timeoutMs?: number;
+  /**
+   * Overrides the default agent id for this call. Used by `task-runner.ts`
+   * to route real code edits to the sandboxed "developer" agent (see
+   * `sandbox-service.ts`) instead of the default, unsandboxed one — every
+   * other caller (plain chat/analysis) keeps using the default.
+   */
+  agentId?: string;
 }
 
 const DEFAULT_TIMEOUT_MS = 45_000;
 const CLI_BIN = process.env.OPENCLAW_CLI_PATH || "openclaw";
-const AGENT_ID = process.env.OPENCLAW_AGENT_ID || "main";
+const DEFAULT_AGENT_ID = process.env.OPENCLAW_AGENT_ID || "main";
 const GATEWAY_URL = process.env.OPENCLAW_GATEWAY_URL;
 const GATEWAY_TOKEN = process.env.OPENCLAW_GATEWAY_TOKEN;
 
@@ -133,7 +140,8 @@ export async function askOpenClaw(message: string, options: AskOpenClawOptions =
   if (GATEWAY_URL) env.OPENCLAW_GATEWAY_URL = GATEWAY_URL;
   if (GATEWAY_TOKEN) env.OPENCLAW_GATEWAY_TOKEN = GATEWAY_TOKEN;
 
-  const args = ["agent", "--agent", AGENT_ID, "--message", prompt, "--json", "--timeout", String(timeoutSeconds)];
+  const agentId = options.agentId || DEFAULT_AGENT_ID;
+  const args = ["agent", "--agent", agentId, "--message", prompt, "--json", "--timeout", String(timeoutSeconds)];
 
   // Give the wrapper a little more room than the CLI's own --timeout so the
   // CLI gets a chance to produce its own structured timeout response first.
