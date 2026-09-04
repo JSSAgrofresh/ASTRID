@@ -5,15 +5,10 @@ import { SendIcon } from "@/components/icons";
 import { MessageBubble } from "@/components/chat/MessageBubble";
 import { Select } from "@/components/ui/Select";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { agents, initialChatMessages, projects } from "@/lib/data";
+import { agents, initialChatMessages } from "@/lib/data";
 import { ChatServiceError, sendChatMessage } from "@/lib/chat-service";
 import { chatOperationStatusMeta } from "@/lib/status";
-import type { ChatMessage } from "@/lib/types";
-
-const projectOptions = projects.map((project) => ({
-  value: project.id,
-  label: project.name,
-}));
+import type { ChatMessage, PublicProject } from "@/lib/types";
 
 const agentOptions = [
   { value: "automatico", label: "Automático" },
@@ -29,7 +24,11 @@ function uid(prefix: string) {
 }
 
 export function ChatShell() {
-  const [selectedProject, setSelectedProject] = useState(projectOptions[0].value);
+  // Fetched from the real project registry (SQLite via /api/projects) —
+  // never hardcoded, so a newly registered repo shows up here with no
+  // code change (see project-registry.ts).
+  const [projectOptions, setProjectOptions] = useState<{ value: string; label: string }[]>([]);
+  const [selectedProject, setSelectedProject] = useState("");
   const [selectedAgent, setSelectedAgent] = useState(agentOptions[0].value);
   const [messages, setMessages] = useState<ChatMessage[]>(initialChatMessages);
   const [draft, setDraft] = useState("");
@@ -41,9 +40,25 @@ export function ChatShell() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, isSending]);
 
+  useEffect(() => {
+    fetch("/api/projects")
+      .then((response) => response.json())
+      .then((data: { projects?: PublicProject[] }) => {
+        const options = (data.projects ?? []).map((project) => ({
+          value: project.projectId,
+          label: project.displayName,
+        }));
+        setProjectOptions(options);
+        setSelectedProject((current) => current || options[0]?.value || "");
+      })
+      .catch(() => {
+        /* the project selector just stays empty; sending is disabled without a selection */
+      });
+  }, []);
+
   async function handleSend() {
     const text = draft.trim();
-    if (!text || isSending) return;
+    if (!text || isSending || !selectedProject) return;
 
     const userMessage: ChatMessage = {
       id: uid("msg"),
@@ -109,7 +124,11 @@ export function ChatShell() {
           <Select
             label="Proyecto"
             value={selectedProject}
-            options={projectOptions}
+            options={
+              projectOptions.length > 0
+                ? projectOptions
+                : [{ value: "", label: "Cargando proyectos..." }]
+            }
             onChange={setSelectedProject}
           />
           <Select
@@ -171,7 +190,7 @@ export function ChatShell() {
         />
         <button
           type="submit"
-          disabled={!draft.trim() || isSending}
+          disabled={!draft.trim() || isSending || !selectedProject}
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gold text-gold-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
           aria-label="Enviar"
         >

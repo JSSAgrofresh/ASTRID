@@ -53,6 +53,16 @@ export async function getCurrentBranch(cwd: string): Promise<GitResult> {
   return runGit(["rev-parse", "--abbrev-ref", "HEAD"], cwd);
 }
 
+/**
+ * `git remote get-url origin` — fails (non-zero exit) if `cwd` isn't a Git
+ * repo at all, or has no `origin` remote. Used by `project-registry.ts` to
+ * confirm an already-existing local directory is really a clone of the
+ * expected GitHub repo before registering it, never to alter remotes.
+ */
+export async function getRemoteUrl(cwd: string, remote = "origin"): Promise<GitResult> {
+  return runGit(["remote", "get-url", remote], cwd);
+}
+
 /** Whether a local branch with this exact name already exists. */
 export async function branchExists(cwd: string, branch: string): Promise<boolean> {
   const result = await runGit(["show-ref", "--verify", "--quiet", `refs/heads/${branch}`], cwd);

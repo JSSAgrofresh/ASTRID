@@ -4,7 +4,8 @@ import path from "node:path";
 
 /**
  * Single server-side SQLite connection for ASTRID's own persisted state
- * (currently: edit tasks — see `task-repository.ts`). Only ever imported
+ * (edit tasks — see `task-repository.ts`; registered projects — see
+ * `project-repository.ts`). Only ever imported
  * from other modules under `lib/server/`, never from a Client Component —
  * and `node:sqlite` is a Node built-in, so nothing here can end up in a
  * browser bundle.
@@ -40,6 +41,20 @@ CREATE TABLE IF NOT EXISTS tasks (
   pr_url         TEXT,
   error_detail   TEXT
 );
+
+CREATE TABLE IF NOT EXISTS projects (
+  project_id     TEXT PRIMARY KEY,
+  owner          TEXT NOT NULL,
+  repo_name      TEXT NOT NULL,
+  full_name      TEXT NOT NULL UNIQUE,
+  display_name   TEXT NOT NULL,
+  workspace_path TEXT NOT NULL,
+  default_branch TEXT NOT NULL,
+  visibility     TEXT NOT NULL,
+  status         TEXT NOT NULL,
+  created_at     TEXT NOT NULL,
+  updated_at     TEXT NOT NULL
+);
 `;
 
 let db: DatabaseSync | undefined;
@@ -50,6 +65,12 @@ export function getDb(): DatabaseSync {
   mkdirSync(path.dirname(DB_PATH), { recursive: true });
   db = new DatabaseSync(DB_PATH);
   db.exec("PRAGMA journal_mode = WAL;");
+  // Several Next.js build/dev worker processes can open this same file at
+  // once (confirmed live: "database is locked" during `next build`'s
+  // parallel page-data collection). WAL alone doesn't wait out a
+  // momentary writer lock — busy_timeout makes SQLite retry for up to 5s
+  // instead of failing immediately.
+  db.exec("PRAGMA busy_timeout = 5000;");
   db.exec(SCHEMA);
   return db;
 }

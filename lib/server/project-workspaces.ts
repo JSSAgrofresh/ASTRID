@@ -1,17 +1,15 @@
 /**
- * Server-only allowlist mapping ASTRID project ids to real filesystem
- * workspaces on this machine.
+ * Historical seed data only — as of the GitHub Repository Manager module,
+ * the live project registry lives in SQLite (`project-store.ts`,
+ * `db/project-repository.ts`), not here. This list is read exactly once,
+ * by `project-store.ts`'s one-time migration, to give the two projects
+ * that predate the registry ("astrid", "agrofresh") their original
+ * `workspacePath` without re-typing it. `workspace.ts#resolveProjectWorkspace`
+ * no longer reads this file at all.
  *
- * Deliberately kept OUT of `lib/data.ts` — that module is imported by
- * client components (e.g. `components/chat/ChatShell.tsx`) to build the
- * project `<select>`, and anything it exports gets bundled for the
- * browser. `workspacePath` must never reach client-side code at all, not
- * just never be rendered — so it lives here instead, under `lib/server/`,
- * imported only by `lib/server/workspace.ts` and Route Handlers.
- *
- * This list IS the allowlist: `resolveProjectWorkspace` only ever accepts
- * a `projectId` (a short slug) from the client and looks it up here — a
- * client can never supply or influence a filesystem path directly.
+ * Still deliberately kept OUT of `lib/data.ts` (client-bundled) for the
+ * same reason as before: `workspacePath` must never reach client-side
+ * code, not just never be rendered.
  */
 export interface ProjectWorkspace {
   projectId: string;

@@ -114,6 +114,63 @@ export interface PublicTask {
   errorDetail?: string;
 }
 
+/**
+ * A repo/project registered with ASTRID — client-safe. Deliberately has NO
+ * filesystem path field; that lives only in
+ * `lib/server/db/project-repository.ts`'s server-only `StoredProject`.
+ */
+export type ProjectVisibility = "public" | "private";
+export type ProjectRegistryStatus = "registered";
+
+export interface PublicProject {
+  projectId: string;
+  owner: string;
+  repoName: string;
+  fullName: string;
+  displayName: string;
+  defaultBranch: string;
+  visibility: ProjectVisibility;
+  status: ProjectRegistryStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Whether a GitHub repo the authenticated account can see is already known to ASTRID. */
+export type LocalCloneStatus = "not_cloned" | "cloned" | "registered";
+
+/** One repo from `GET /api/repositories` — GitHub metadata plus ASTRID's local status for it. */
+export interface GithubRepoSummary {
+  owner: string;
+  repoName: string;
+  fullName: string;
+  visibility: ProjectVisibility;
+  defaultBranch: string;
+  cloneUrl: string;
+  updatedAt: string;
+  description: string;
+  isPrivate: boolean;
+  isArchived: boolean;
+  isFork: boolean;
+  localStatus: LocalCloneStatus;
+  projectId?: string;
+}
+
+/** Body for `POST /api/projects/register`. */
+export interface RegisterProjectRequest {
+  fullName: string;
+}
+
+/** Body for `POST /api/repositories/create` — `confirm` must be explicitly `true`. */
+export interface CreateRepositoryRequest {
+  name: string;
+  description?: string;
+  visibility: ProjectVisibility;
+  addReadme: boolean;
+  gitignoreTemplate?: string;
+  license?: string;
+  confirm: boolean;
+}
+
 export interface ChatRequest {
   message: string;
   projectId?: string;
