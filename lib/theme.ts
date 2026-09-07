@@ -18,6 +18,66 @@ export function applyResolvedTheme(resolved: ResolvedTheme) {
 }
 
 /**
+ * A minimal external store over `localStorage`'s theme key, read via
+ * `useSyncExternalStore` in `ThemeProvider`. This is the React-idiomatic
+ * way to expose a value that differs between the server and the client
+ * (localStorage isn't readable on the server) without a hydration
+ * mismatch: React renders `getServerSnapshot()`'s value on both the
+ * server and the client's first (hydration) pass, then re-renders with
+ * the real client value immediately after — no manual `useEffect` +
+ * `setState` needed, which is what `react-hooks/set-state-in-effect`
+ * flags as an anti-pattern.
+ *
+ * `notifyThemeChange` covers same-tab updates (the native `storage`
+ * event only fires in *other* tabs/windows); `setTheme` below calls it
+ * right after writing to `localStorage`.
+ */
+const listeners = new Set<() => void>();
+
+export function notifyThemeChange(): void {
+  for (const listener of listeners) listener();
+}
+
+export function subscribeThemeChange(listener: () => void): () => void {
+  listeners.add(listener);
+  const onStorage = (event: StorageEvent) => {
+    if (event.key === THEME_STORAGE_KEY) listener();
+  };
+  window.addEventListener("storage", onStorage);
+  return () => {
+    listeners.delete(listener);
+    window.removeEventListener("storage", onStorage);
+  };
+}
+
+export function getStoredThemeSnapshot(): ThemePreference {
+  return (localStorage.getItem(THEME_STORAGE_KEY) as ThemePreference | null) ?? "system";
+}
+
+export function getServerThemeSnapshot(): ThemePreference {
+  return "system";
+}
+
+/** Same idea as the theme store above, but for the resolved (light/dark) value — also reactive to `prefers-color-scheme` changes while `theme` is "system". */
+export function subscribeResolvedThemeChange(listener: () => void): () => void {
+  const unsubscribeTheme = subscribeThemeChange(listener);
+  const mql = window.matchMedia("(prefers-color-scheme: dark)");
+  mql.addEventListener("change", listener);
+  return () => {
+    unsubscribeTheme();
+    mql.removeEventListener("change", listener);
+  };
+}
+
+export function getResolvedThemeSnapshot(): ResolvedTheme {
+  return resolveTheme(getStoredThemeSnapshot());
+}
+
+export function getServerResolvedThemeSnapshot(): ResolvedTheme {
+  return "light";
+}
+
+/**
  * Serialized as a plain string and inlined as a blocking <script> in
  * app/layout.tsx's <head>, so the correct theme is set on <html> before
  * first paint — no flash of the wrong theme. Kept in sync with

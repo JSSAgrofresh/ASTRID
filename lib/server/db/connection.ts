@@ -55,6 +55,28 @@ CREATE TABLE IF NOT EXISTS projects (
   created_at     TEXT NOT NULL,
   updated_at     TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS conversations (
+  conversation_id TEXT PRIMARY KEY,
+  project_id      TEXT,
+  title           TEXT NOT NULL,
+  status          TEXT NOT NULL,
+  created_at      TEXT NOT NULL,
+  updated_at      TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS messages (
+  message_id      TEXT PRIMARY KEY,
+  conversation_id TEXT NOT NULL REFERENCES conversations(conversation_id),
+  role            TEXT NOT NULL,
+  content         TEXT NOT NULL,
+  type            TEXT,
+  created_at      TEXT NOT NULL,
+  metadata        TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_messages_conversation_created
+  ON messages(conversation_id, created_at);
 `;
 
 let db: DatabaseSync | undefined;

@@ -1,7 +1,19 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
-import { applyResolvedTheme, resolveTheme, THEME_STORAGE_KEY, type ResolvedTheme, type ThemePreference } from "@/lib/theme";
+import { createContext, useCallback, useContext, useEffect, useSyncExternalStore, type ReactNode } from "react";
+import {
+  applyResolvedTheme,
+  getResolvedThemeSnapshot,
+  getServerResolvedThemeSnapshot,
+  getServerThemeSnapshot,
+  getStoredThemeSnapshot,
+  notifyThemeChange,
+  subscribeResolvedThemeChange,
+  subscribeThemeChange,
+  THEME_STORAGE_KEY,
+  type ResolvedTheme,
+  type ThemePreference,
+} from "@/lib/theme";
 
 interface ThemeContextValue {
   theme: ThemePreference;
@@ -12,40 +24,31 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  // Lazy initializers run once on mount and read localStorage directly —
-  // safe here because this provider renders no theme-dependent markup of
-  // its own (just a Context.Provider), so there is nothing for these
-  // client-only reads to mismatch against during hydration. The actual
-  // on-screen colors are already correct before this even runs, because
-  // THEME_BOOT_SCRIPT set data-theme synchronously before paint.
-  const [theme, setThemeState] = useState<ThemePreference>(() => {
-    if (typeof window === "undefined") return "system";
-    return (localStorage.getItem(THEME_STORAGE_KEY) as ThemePreference | null) ?? "system";
-  });
-  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>(() => {
-    if (typeof window === "undefined") return "light";
-    const stored = (localStorage.getItem(THEME_STORAGE_KEY) as ThemePreference | null) ?? "system";
-    return resolveTheme(stored);
-  });
+  // useSyncExternalStore renders `getServerSnapshot()`'s value on both the
+  // server and the client's first (hydration) pass — matching what
+  // THEME_BOOT_SCRIPT and <html data-theme="light"> already assume — then
+  // re-renders with the real localStorage value right after. Any
+  // component reading these (e.g. ThemeToggleButton's icon/aria-label)
+  // therefore never disagrees with what the server rendered. See
+  // lib/theme.ts for the store implementation.
+  const theme = useSyncExternalStore(subscribeThemeChange, getStoredThemeSnapshot, getServerThemeSnapshot);
+  const resolvedTheme = useSyncExternalStore(
+    subscribeResolvedThemeChange,
+    getResolvedThemeSnapshot,
+    getServerResolvedThemeSnapshot,
+  );
 
+  // Applies the resolved theme to <html> whenever it changes — covers the
+  // initial client sync, explicit theme switches, and prefers-color-scheme
+  // changes while on "system". Also re-applies after React's Strict Mode
+  // dev remount, which resets attributes THEME_BOOT_SCRIPT set outside JSX.
   useEffect(() => {
-    if (theme !== "system") return;
-    const mql = window.matchMedia("(prefers-color-scheme: dark)");
-    const handleChange = () => {
-      const resolved = resolveTheme("system");
-      setResolvedTheme(resolved);
-      applyResolvedTheme(resolved);
-    };
-    mql.addEventListener("change", handleChange);
-    return () => mql.removeEventListener("change", handleChange);
-  }, [theme]);
+    applyResolvedTheme(resolvedTheme);
+  }, [resolvedTheme]);
 
   const setTheme = useCallback((next: ThemePreference) => {
-    setThemeState(next);
     localStorage.setItem(THEME_STORAGE_KEY, next);
-    const resolved = resolveTheme(next);
-    setResolvedTheme(resolved);
-    applyResolvedTheme(resolved);
+    notifyThemeChange();
   }, []);
 
   return <ThemeContext.Provider value={{ theme, resolvedTheme, setTheme }}>{children}</ThemeContext.Provider>;

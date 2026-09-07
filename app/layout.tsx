@@ -25,7 +25,20 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html
+      lang="es"
+      data-theme="light"
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      // THEME_BOOT_SCRIPT (below) mutates data-theme/colorScheme on this
+      // element before React hydrates, so the two deterministically
+      // disagree with the "light" default rendered here. That mismatch is
+      // real, intentional, and exactly what Next's own guide for this
+      // pattern documents (see node_modules/next/dist/docs/01-app/
+      // 02-guides/preventing-flash-before-hydration.md#themes) —
+      // suppressHydrationWarning only silences the warning for this single
+      // element, not its descendants.
+      suppressHydrationWarning
+    >
       <head>
         {/* Blocking, pre-hydration: sets data-theme before first paint so
             there is no flash of the wrong theme. See lib/theme.ts. */}

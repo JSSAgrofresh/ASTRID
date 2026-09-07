@@ -1,7 +1,6 @@
 import type {
   Agent,
   ActivityEvent,
-  ChatMessage,
   Project,
   Task,
 } from "./types";
@@ -224,34 +223,6 @@ export const activityEvents: ActivityEvent[] = [
     project: "ASTRID",
     actor: "Developer",
     timestamp: "hace 1 hora",
-  },
-];
-
-// Mirrors exactly what `generateMockChatResponse` would return for this
-// message with projectId "agrofresh" and mode "automatico", so
-// the seeded history never drifts from what the live API actually produces.
-export const initialChatMessages: ChatMessage[] = [
-  {
-    id: "msg-1",
-    role: "user",
-    content:
-      "Revisa el módulo de Resultados Cromatográficos y agrega un filtro por laboratorio.",
-    timestamp: "09:14",
-  },
-  {
-    id: "msg-2",
-    role: "astrid",
-    content: "Entendido. Revisaré la implementación actual antes de continuar.",
-    timestamp: "09:14",
-    type: "development",
-    status: "analyzing",
-    agent: "Manager",
-    steps: [
-      { label: "Proyecto identificado: AgroFresh Report Hub", status: "completed" },
-      { label: "Solicitud clasificada como tarea de desarrollo", status: "completed" },
-      { label: "Agente asignado: Manager", status: "completed" },
-      { label: "Conexión con OpenClaw", status: "pending" },
-    ],
   },
 ];
 

@@ -186,7 +186,7 @@ export interface ChatResponse {
   task?: PublicTask;
 }
 
-export type ChatRole = "user" | "astrid";
+export type ChatRole = "user" | "astrid" | "system";
 
 /**
  * A message as rendered in the chat history. For `role: "astrid"` it is
@@ -198,6 +198,42 @@ export interface ChatMessage {
   role: ChatRole;
   content: string;
   timestamp: string;
+  type?: ChatMessageType;
+  status?: ChatOperationStatus;
+  agent?: string;
+  steps?: ChatStep[];
+  task?: PublicTask;
+}
+
+export type ConversationStatus = "active" | "archived";
+
+/**
+ * A persisted conversation — client-safe. Deliberately has no fields
+ * beyond what's needed to list/identify it; the messages themselves are
+ * fetched separately via `GET /api/conversations/[id]`.
+ */
+export interface PublicConversation {
+  conversationId: string;
+  projectId?: string;
+  title: string;
+  status: ConversationStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Body for `POST /api/conversations`. Both fields are optional — the "Nueva conversación" action sends neither. */
+export interface CreateConversationRequest {
+  projectId?: string;
+  title?: string;
+}
+
+/**
+ * Body for `POST /api/conversations/[id]/messages`. Mirrors `ChatMessage`
+ * minus the bookkeeping (`id`, `timestamp`) the server assigns itself.
+ */
+export interface AppendMessageRequest {
+  role: ChatRole;
+  content: string;
   type?: ChatMessageType;
   status?: ChatOperationStatus;
   agent?: string;
