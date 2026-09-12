@@ -27,7 +27,7 @@ export function Header() {
         <span className="hidden h-4 w-px bg-border sm:block" />
         <p className="text-sm text-muted">
           <span className="text-foreground">{greeting}, Jorge.</span>{" "}
-          <span className="hidden sm:inline">ASTRID está lista para orquestar tu trabajo.</span>
+          <span className="hidden sm:inline">ANAI está lista para orquestar tu trabajo.</span>
         </p>
       </div>
 
@@ -42,7 +42,7 @@ export function Header() {
         </button>
         <button
           type="button"
-          className="flex h-9 items-center gap-1.5 rounded-lg border border-gold/30 bg-gold-dim px-3 text-sm font-medium text-gold-ink transition-colors hover:border-gold/50"
+          className="flex h-9 items-center gap-1.5 rounded-lg border border-gold/30 bg-gold-dim px-3 text-sm font-medium text-gold-ink transition-colors hover:bg-gold-dim hover:border-gold/50"
         >
           <PlusIcon className="h-4 w-4" />
           <span className="hidden sm:inline">Nueva tarea</span>

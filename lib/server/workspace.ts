@@ -4,7 +4,7 @@ import { getProject } from "./project-store";
 
 /**
  * Resolves `projectId → workspacePath` and validates the result before
- * ASTRID ever hands a path to OpenClaw. This is the fix for the
+ * ANAI ever hands a path to OpenClaw. This is the fix for the
  * `<illegal path>` failure: previously nothing told OpenClaw where the
  * selected project actually lives on disk, so the model had to guess a
  * path itself when it tried to inspect the repo — and sometimes guessed

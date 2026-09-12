@@ -7,7 +7,7 @@ export default function AgentesPage() {
     <div className="mx-auto max-w-6xl px-4 py-8 md:px-8">
       <SectionHeading
         title="Agentes"
-        description="Equipo de agentes de IA disponibles para ASTRID."
+        description="Equipo de agentes de IA disponibles para ANAI."
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

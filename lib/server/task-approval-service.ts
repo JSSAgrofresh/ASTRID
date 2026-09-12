@@ -6,7 +6,7 @@ import { getTask, updateTask, type StoredTask } from "./task-store";
 
 /**
  * Approve/reject an already-created edit task (see `task-runner.ts` for
- * how the task itself gets created). This is the ONLY place ASTRID ever
+ * how the task itself gets created). This is the ONLY place ANAI ever
  * commits, pushes, or opens a PR — and it re-validates everything from
  * scratch rather than trusting the stored record, because time has passed
  * since the task was created and the human is only now saying "go".
@@ -30,7 +30,7 @@ function summarize(instruction: string, maxLen = 60): string {
 function buildCommitMessage(task: StoredTask): string {
   const header = `${classifyChangeType(task.instruction)}(astrid): ${summarize(task.instruction)}`;
   const body = task.filesChanged.map((f) => `- ${f}`).join("\n");
-  return `${header}\n\n${body}\n\nGenerado por ASTRID (branch: ${task.taskBranch}).`;
+  return `${header}\n\n${body}\n\nGenerado por ANAI (branch: ${task.taskBranch}).`;
 }
 
 function buildPrTitle(task: StoredTask): string {
@@ -54,7 +54,7 @@ function buildPrBody(task: StoredTask): string {
     validationLine("Build", task.validations.build),
     "",
     "## Generado por",
-    "ASTRID — revisado y aprobado por un humano antes de publicarse. Sin merge automático.",
+    "ANAI — revisado y aprobado por un humano antes de publicarse. Sin merge automático.",
   ].join("\n");
 }
 
@@ -87,7 +87,7 @@ async function reverifyBeforeCommit(task: StoredTask): Promise<string | null> {
   }
 
   const secretTouched = filesNow.find((f) => SECRET_FILE_PATTERN.test(f));
-  if (secretTouched) return `El archivo "${secretTouched}" parece un secreto/.env — ASTRID no confirma cambios que lo toquen.`;
+  if (secretTouched) return `El archivo "${secretTouched}" parece un secreto/.env — ANAI no confirma cambios que lo toquen.`;
 
   return null;
 }
@@ -136,7 +136,7 @@ export async function approveTask(taskId: string): Promise<ApprovalOutcome> {
 
   const remoteConfirm = await git.remoteBranchExists(task.worktreeDir, task.taskBranch);
   if (!remoteConfirm.ok) {
-    const detail = "git push no reportó error, pero ASTRID no pudo confirmar la branch en el remoto (git ls-remote).";
+    const detail = "git push no reportó error, pero ANAI no pudo confirmar la branch en el remoto (git ls-remote).";
     console.error("[task-approval]", detail);
     const updated = updateTask(taskId, { status: "error", errorDetail: detail, commitSha })!;
     return { ok: false, task: updated, reason: detail };

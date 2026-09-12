@@ -28,13 +28,18 @@ export function Sidebar() {
 
   return (
     <aside className="hidden w-60 shrink-0 flex-col border-r border-border bg-background-elevated md:flex">
-      <div className="flex h-16 items-center gap-2.5 px-6">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-gold/30 bg-gold-dim">
-          <span className="text-sm font-semibold text-gold-ink">A</span>
+      <div className="flex h-16 items-center gap-3 px-5">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg brand-gradient">
+          <svg viewBox="0 0 32 32" fill="none" className="h-5 w-5" aria-hidden>
+            <polygon points="16,3 29,27 3,27" fill="none" stroke="white" strokeWidth="2.5" strokeLinejoin="round" />
+            <line x1="16" y1="3" x2="9" y2="27" stroke="white" strokeWidth="2" opacity="0.7" />
+            <line x1="8" y1="20" x2="24" y2="20" stroke="white" strokeWidth="2" opacity="0.7" />
+          </svg>
         </div>
-        <span className="text-[15px] font-semibold tracking-wide text-foreground">
-          ASTRID
-        </span>
+        <div className="flex flex-col leading-none">
+          <span className="text-[15px] font-bold tracking-widest text-foreground">ANAI</span>
+          <span className="text-[9px] font-medium tracking-wider text-muted-2 uppercase">by SAN.AI</span>
+        </div>
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-4">

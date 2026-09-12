@@ -15,7 +15,7 @@ function relativeTime(iso: string): string {
 }
 
 /**
- * Card for a project already registered with ASTRID (real SQLite data via
+ * Card for a project already registered with ANAI (real SQLite data via
  * `PublicProject` — never a filesystem path, since that type never has one).
  */
 export function RegisteredProjectCard({ project }: { project: PublicProject }) {

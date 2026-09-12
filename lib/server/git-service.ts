@@ -15,7 +15,7 @@ import path from "node:path";
  * actual content edit, is NOT restricted by this module — it has its own
  * unrestricted shell access, per the caveats documented in
  * `openclaw-client.ts` and `task-runner.ts`. This module only guarantees
- * that ASTRID's *own* server code never issues a destructive Git command.)
+ * that ANAI's *own* server code never issues a destructive Git command.)
  */
 
 interface GitResult {
@@ -124,7 +124,7 @@ export async function getDiff(cwd: string, maxChars = 20_000): Promise<string> {
  * Read-only remote check — `git ls-remote` never pushes, fetches, or
  * writes anything local; it just asks the remote whether a ref exists.
  * Used purely to *verify* (not enforce) that a task branch was never
- * pushed, since ASTRID's own code never calls `git push` and this is the
+ * pushed, since ANAI's own code never calls `git push` and this is the
  * cheapest independent confirmation of that fact.
  */
 export async function remoteBranchExists(cwd: string, branch: string): Promise<GitResult> {

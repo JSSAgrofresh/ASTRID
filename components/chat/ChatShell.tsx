@@ -220,14 +220,14 @@ export function ChatShell() {
         })
           .then(({ conversation }) => upsertConversation(conversation))
           .catch((error) => {
-            console.error("[ChatShell] no se pudo guardar la respuesta de ASTRID:", error);
+            console.error("[ChatShell] no se pudo guardar la respuesta de ANAI:", error);
           });
       }
     } catch (error) {
       const errorContent =
         error instanceof ChatServiceError
           ? error.message
-          : "Ocurrió un error inesperado al contactar a ASTRID.";
+          : "Ocurrió un error inesperado al contactar a ANAI.";
 
       setMessages((prev) => [
         ...prev,
@@ -356,7 +356,7 @@ export function ChatShell() {
               void handleSend();
             }
           }}
-          placeholder="Escribe una instrucción para ASTRID..."
+          placeholder="Escribe una instrucción para ANAI..."
           rows={2}
           disabled={isSending}
           className="max-h-40 flex-1 resize-none bg-transparent text-sm text-foreground placeholder:text-muted-2 focus:outline-none disabled:opacity-60"

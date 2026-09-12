@@ -18,9 +18,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ASTRID — Centro de operaciones",
+  title: "ANAI — Centro de operaciones",
   description:
-    "Plataforma personal para administrar proyectos, tareas, agentes de IA y conversaciones operativas.",
+    "Plataforma de orquestación de agentes de IA para proyectos, tareas y desarrollo de software. by SAN.AI",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

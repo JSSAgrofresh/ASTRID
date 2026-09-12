@@ -14,7 +14,7 @@ import { resolveNewProjectTargetPath, verifyProjectPathAfterClone } from "./work
 
 /**
  * Orchestrates GitHub repo discovery, registration, and creation for
- * ASTRID's project registry. This is the ONLY module that combines
+ * ANAI's project registry. This is the ONLY module that combines
  * `github-repos-service.ts` (gh CLI), `git-service.ts` (local repo
  * checks), `workspace.ts` (path safety), and `project-store.ts` (SQLite) —
  * API routes call only the three functions below, never those modules
@@ -87,7 +87,7 @@ export async function listReposWithLocalStatus(): Promise<
 
 /**
  * Registers an existing GitHub repo (already accessible to the
- * authenticated `gh` account) as an ASTRID project: clones it if not
+ * authenticated `gh` account) as an ANAI project: clones it if not
  * present locally, or validates an existing local copy's `origin` remote
  * matches before trusting it. No approval gate — this is the
  * "clonar/registrar" action, explicitly allowed automatically.
@@ -176,7 +176,7 @@ export async function createAndRegisterRepo(params: CreateRepositoryRequest): Pr
   if (existsSync(target.path)) {
     return {
       ok: false,
-      detail: `Ya existe una carpeta local en ${target.path}. ASTRID no creará el repositorio para evitar un conflicto.`,
+      detail: `Ya existe una carpeta local en ${target.path}. ANAI no creará el repositorio para evitar un conflicto.`,
     };
   }
 
