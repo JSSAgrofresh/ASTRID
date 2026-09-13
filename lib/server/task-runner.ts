@@ -156,7 +156,7 @@ async function ensureDependencies(mainWorkspace: string, worktreeDir: string): P
 
 function buildEditContext(projectName: string, branch: string): string {
   return [
-    "Contexto de ASTRID:",
+    "Contexto de SANAI:",
     `- Proyecto: ${projectName}`,
     `- Workspace de trabajo para ESTA tarea (worktree Git aislado, en la branch "${branch}", creada por el servidor): ${DEVELOPER_SANDBOX_WORKSPACE}`,
     "- Estás corriendo dentro de un contenedor Docker aislado (sandbox) que solo tiene montado ese worktree. No hay red, ni acceso al resto del host, ni a otros proyectos, ni a credenciales.",
@@ -201,7 +201,7 @@ export async function runEditTask(request: EditTaskRequest): Promise<ChatRespons
     steps.push({ label: "Estado Git limpio", status: "error" });
     return {
       message:
-        "El repositorio tiene cambios locales sin confirmar que ASTRID no creó. Me detengo aquí: revisa o guarda esos cambios manualmente antes de pedirme una edición — no hago stash ni los sobrescribo.",
+        "El repositorio tiene cambios locales sin confirmar que SANAI no creó. Me detengo aquí: revisa o guarda esos cambios manualmente antes de pedirme una edición — no hago stash ni los sobrescribo.",
       type: "development",
       status: "error",
       steps,
@@ -268,7 +268,7 @@ export async function runEditTask(request: EditTaskRequest): Promise<ChatRespons
   if (filesChanged.length === 0) {
     steps.push({ label: "Modificando archivos", status: "error" });
     return {
-      message: `OpenClaw respondió, pero ASTRID no detectó ningún cambio real en el workspace. Respuesta de OpenClaw: "${editOutcome.reply}". La branch "${branch}" quedó creada sin cambios.`,
+      message: `OpenClaw respondió, pero SANAI no detectó ningún cambio real en el workspace. Respuesta de OpenClaw: "${editOutcome.reply}". La branch "${branch}" quedó creada sin cambios.`,
       type: "development",
       status: "error",
       agent: "GitHub Copilot",
@@ -315,7 +315,7 @@ export async function runEditTask(request: EditTaskRequest): Promise<ChatRespons
   const pushedToRemote = remoteCheck.ok; // exit 0 => ref found on origin
   steps.push({ label: pushedToRemote ? "⚠ La branch aparece en origin (no debería)" : "Verificado: sin push al remoto", status: pushedToRemote ? "error" : "completed" });
   if (pushedToRemote) {
-    console.error(`[task-runner] ALERTA: la branch "${branch}" aparece en origin pero ASTRID nunca llamó a git push.`);
+    console.error(`[task-runner] ALERTA: la branch "${branch}" aparece en origin pero SANAI nunca llamó a git push.`);
   }
 
   const diffStat = await git.getDiffStat(worktreeDir);

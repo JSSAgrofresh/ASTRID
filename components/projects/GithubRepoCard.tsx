@@ -8,7 +8,7 @@ import type { GithubRepoSummary } from "@/lib/types";
 const LOCAL_STATUS_META = {
   not_cloned: { label: "No clonado", tone: "muted" as const },
   cloned: { label: "Clonado (sin registrar)", tone: "warning" as const },
-  registered: { label: "En ASTRID", tone: "success" as const },
+  registered: { label: "En SANAI", tone: "success" as const },
 };
 
 interface GithubRepoCardProps {
@@ -52,10 +52,10 @@ export function GithubRepoCard({ repo, onAdd, isBusy }: GithubRepoCardProps) {
           className="w-full rounded-xl bg-gold py-2 text-sm font-medium text-gold-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
           {repo.localStatus === "registered"
-            ? "Ya está en ASTRID"
+            ? "Ya está en SANAI"
             : isBusy
               ? "Agregando..."
-              : "Agregar a ASTRID"}
+              : "Agregar a SANAI"}
         </button>
       </div>
     </Card>

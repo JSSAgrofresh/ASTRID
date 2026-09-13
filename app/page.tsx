@@ -16,7 +16,7 @@ export default function DashboardPage() {
     <div className="mx-auto max-w-6xl px-4 py-8 md:px-8">
       <SectionHeading
         title="Inicio"
-        description="Resumen general de tu operación con ASTRID."
+        description="Resumen general de tu operación con SANAI."
       />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">

@@ -131,7 +131,7 @@ export function ProjectsView() {
 
       <section className="mb-10">
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-2">
-          Mis proyectos ASTRID
+          Mis proyectos SANAI
         </h2>
         {isLoading ? (
           <p className="text-sm text-muted">Cargando...</p>

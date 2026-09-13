@@ -133,7 +133,7 @@ export async function createRepo(params: CreateRepoParams): Promise<CreateRepoRe
   if (!view.ok) {
     return {
       ok: false,
-      detail: `El repositorio se creó pero ASTRID no pudo confirmarlo con gh repo view: ${view.detail}`,
+      detail: `El repositorio se creó pero SANAI no pudo confirmarlo con gh repo view: ${view.detail}`,
     };
   }
   return { ok: true, fullName: view.repo.nameWithOwner };

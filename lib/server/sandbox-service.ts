@@ -11,14 +11,14 @@ import * as git from "./git-service";
  *
  * Why this exists: OpenClaw's per-agent `workspace` is a single static
  * path (confirmed against the installed OpenClaw docs — there is no
- * per-session/per-task workspace override), but ASTRID creates a brand
- * new worktree per task. So immediately before each edit turn, ASTRID
+ * per-session/per-task workspace override), but SANAI creates a brand
+ * new worktree per task. So immediately before each edit turn, SANAI
  * repoints "developer"'s workspace at that task's worktree and forces its
  * Docker container to be recreated (`sandbox recreate`) so the container
  * actually remounts the new path instead of reusing a stale one from a
  * previous task.
  *
- * Concurrency note: this only works because ASTRID runs one edit task at
+ * Concurrency note: this only works because SANAI runs one edit task at
  * a time today (see `task-runner.ts`) — "developer" is a single shared
  * agent identity, so two tasks racing this function would fight over the
  * same workspace pointer. Not safe to parallelize without giving each

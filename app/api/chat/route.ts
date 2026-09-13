@@ -5,7 +5,7 @@ import { resolveProjectWorkspace } from "@/lib/server/workspace";
 import { projects } from "@/lib/data";
 import type { ChatRequest, ChatResponse } from "@/lib/types";
 
-const FALLBACK_UNAVAILABLE_MESSAGE = "No fue posible conectar con ASTRID Core.";
+const FALLBACK_UNAVAILABLE_MESSAGE = "No fue posible conectar con SANAI Core.";
 const WORKSPACE_UNAVAILABLE_MESSAGE = "El workspace del proyecto seleccionado no está disponible.";
 
 // Real repo analysis (the model reading/listing files through exec/process
@@ -23,7 +23,7 @@ const READ_ONLY_POLICY = [
 
 function buildProjectContext(projectName: string, workspacePath: string): string {
   return [
-    "Contexto de ASTRID:",
+    "Contexto de SANAI:",
     `- Proyecto seleccionado: ${projectName}`,
     `- Workspace real (ruta absoluta ya validada por el servidor): ${workspacePath}`,
     "",
@@ -110,7 +110,7 @@ export async function POST(request: Request) {
       ? FALLBACK_UNAVAILABLE_MESSAGE
       : outcome.kind === "misconfigured"
         ? outcome.detail
-        : `ASTRID Core respondió con un error: ${outcome.detail}`;
+        : `SANAI Core respondió con un error: ${outcome.detail}`;
 
   const response: ChatResponse = { message, type: "conversation", status: "error" };
   return Response.json(response);

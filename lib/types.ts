@@ -89,7 +89,7 @@ export interface TaskValidations {
 
 /**
  * Client-safe view of a real, isolated Git edit task — only present when
- * ASTRID actually created a branch/worktree and (attempted to) change
+ * SANAI actually created a branch/worktree and (attempted to) change
  * files. `diff`/`diffStat`/`filesChanged` reflect real `git` output from
  * that worktree, never just what the model claimed to do. Deliberately
  * has NO filesystem path fields — those live only in
@@ -115,7 +115,7 @@ export interface PublicTask {
 }
 
 /**
- * A repo/project registered with ASTRID — client-safe. Deliberately has NO
+ * A repo/project registered with SANAI — client-safe. Deliberately has NO
  * filesystem path field; that lives only in
  * `lib/server/db/project-repository.ts`'s server-only `StoredProject`.
  */
@@ -135,10 +135,10 @@ export interface PublicProject {
   updatedAt: string;
 }
 
-/** Whether a GitHub repo the authenticated account can see is already known to ASTRID. */
+/** Whether a GitHub repo the authenticated account can see is already known to SANAI. */
 export type LocalCloneStatus = "not_cloned" | "cloned" | "registered";
 
-/** One repo from `GET /api/repositories` — GitHub metadata plus ASTRID's local status for it. */
+/** One repo from `GET /api/repositories` — GitHub metadata plus SANAI's local status for it. */
 export interface GithubRepoSummary {
   owner: string;
   repoName: string;

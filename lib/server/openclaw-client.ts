@@ -15,7 +15,7 @@ import { execFile } from "node:child_process";
  *
  * Auth: the Gateway uses `gateway.auth.mode = "token"`. `openclaw agent`
  * has no --url/--token flags of its own; it resolves credentials
- * ambiently. If ASTRID's own OPENCLAW_GATEWAY_URL / OPENCLAW_GATEWAY_TOKEN
+ * ambiently. If SANAI's own OPENCLAW_GATEWAY_URL / OPENCLAW_GATEWAY_TOKEN
  * env vars are set, we forward them to the child process env (confirmed
  * real env vars — see the OpenClaw dotenv allow-list) so a remote/override
  * Gateway can be targeted later without code changes. If they are not
@@ -173,7 +173,7 @@ export async function askOpenClaw(message: string, options: AskOpenClawOptions =
     return {
       ok: false,
       kind: "empty_reply",
-      detail: "OpenClaw respondió, pero ASTRID no reconoció el formato de la respuesta.",
+      detail: "OpenClaw respondió, pero SANAI no reconoció el formato de la respuesta.",
     };
   }
 
