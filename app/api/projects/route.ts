@@ -3,7 +3,7 @@ import { listProjects, toPublicProject } from "@/lib/server/project-store";
 /**
  * GET /api/projects
  *
- * Lists projects registered with ANAI (the SQLite-backed registry —
+ * Lists projects registered with SANAI (the SQLite-backed registry —
  * see `project-store.ts`). Always projects through `toPublicProject`, so
  * `workspacePath` never leaves the server.
  */

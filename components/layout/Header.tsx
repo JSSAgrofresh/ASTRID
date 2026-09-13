@@ -27,7 +27,7 @@ export function Header() {
         <span className="hidden h-4 w-px bg-border sm:block" />
         <p className="text-sm text-muted">
           <span className="text-foreground">{greeting}, Jorge.</span>{" "}
-          <span className="hidden sm:inline">ANAI está lista para orquestar tu trabajo.</span>
+          <span className="hidden sm:inline">SANAI está lista para orquestar tu trabajo.</span>
         </p>
       </div>
 

@@ -36,7 +36,7 @@ export function SettingsForm() {
     <div className="space-y-4">
       <Card className="p-5">
         <h2 className="text-sm font-semibold text-foreground">Apariencia</h2>
-        <p className="mt-1 text-xs text-muted">Elige cómo se ve ANAI en este dispositivo.</p>
+        <p className="mt-1 text-xs text-muted">Elige cómo se ve SANAI en este dispositivo.</p>
         <div className="mt-4">
           <ThemeSelect />
         </div>
@@ -45,7 +45,7 @@ export function SettingsForm() {
       <Card className="p-5">
         <h2 className="text-sm font-semibold text-foreground">Modelo y proyecto</h2>
         <p className="mt-1 text-xs text-muted">
-          Preferencias generales de orquestación para ANAI.
+          Preferencias generales de orquestación para SANAI.
         </p>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <Select label="Modelo preferido" value={model} options={modelOptions} onChange={setModel} />
@@ -69,7 +69,7 @@ export function SettingsForm() {
       <Card className="p-5">
         <h2 className="text-sm font-semibold text-foreground">Confirmaciones y automatización</h2>
         <p className="mt-1 text-xs text-muted">
-          Controla cuándo ANAI debe pedirte aprobación antes de actuar.
+          Controla cuándo SANAI debe pedirte aprobación antes de actuar.
         </p>
         <div className="mt-4 divide-y divide-border">
           <Toggle
@@ -88,7 +88,7 @@ export function SettingsForm() {
             checked={notifyOnPr}
             onChange={setNotifyOnPr}
             label="Notificarme al abrir un Pull Request"
-            description="Recibe un aviso cuando ANAI crea un PR en tu nombre."
+            description="Recibe un aviso cuando SANAI crea un PR en tu nombre."
           />
         </div>
       </Card>

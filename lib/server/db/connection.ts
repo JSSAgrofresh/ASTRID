@@ -3,7 +3,7 @@ import { mkdirSync } from "node:fs";
 import path from "node:path";
 
 /**
- * Single server-side SQLite connection for ANAI's own persisted state
+ * Single server-side SQLite connection for SANAI's own persisted state
  * (edit tasks — see `task-repository.ts`; registered projects — see
  * `project-repository.ts`). Only ever imported
  * from other modules under `lib/server/`, never from a Client Component —
@@ -14,10 +14,10 @@ import path from "node:path";
  * `../workspace.ts`) — outside `ALLOWED_PROJECTS_ROOT` and outside this
  * repo entirely, so it can never end up inside a Git repo, `public/`, or
  * the Next.js build output by construction, not merely by `.gitignore`
- * convention. Override with `ANAI_DB_PATH` (e.g. for tests) if needed.
+ * convention. Override with `SANAI_DB_PATH` (e.g. for tests) if needed.
  */
 const DEFAULT_DB_PATH = "/home/kokes/astrid/data/astrid.db";
-export const DB_PATH = process.env.ANAI_DB_PATH || DEFAULT_DB_PATH;
+export const DB_PATH = process.env.SANAI_DB_PATH || DEFAULT_DB_PATH;
 
 const SCHEMA = `
 CREATE TABLE IF NOT EXISTS tasks (

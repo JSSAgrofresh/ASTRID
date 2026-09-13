@@ -37,8 +37,8 @@ export function Sidebar() {
           </svg>
         </div>
         <div className="flex flex-col leading-none">
-          <span className="text-[15px] font-bold tracking-widest text-foreground">ANAI</span>
-          <span className="text-[9px] font-medium tracking-wider text-muted-2 uppercase">by SAN.AI</span>
+          <span className="text-[15px] font-bold tracking-widest text-foreground">SANAI</span>
+          <span className="text-[9px] font-medium tracking-wider text-muted-2 uppercase">SAN.AI</span>
         </div>
       </div>
 

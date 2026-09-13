@@ -4,7 +4,7 @@ import type { CreateRepositoryRequest } from "@/lib/types";
 /**
  * POST /api/repositories/create
  *
- * Creates a brand-new GitHub repository and registers it with ANAI.
+ * Creates a brand-new GitHub repository and registers it with SANAI.
  * HARD requirement: the body must include `"confirm": true` — this is the
  * explicit-approval gate for repo creation. The UI must render a concrete
  * summary (name, visibility, options) and get a distinct second click

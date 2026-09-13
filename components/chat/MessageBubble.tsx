@@ -21,7 +21,7 @@ export function MessageBubble({ message }: { message: ChatMessage }) {
           {!isUser && (
             <div className="mb-1 flex items-center gap-2">
               <p className="text-xs font-semibold text-gold-ink">
-                {isDevelopment ? "ANAI · Tarea" : "ANAI"}
+                {isDevelopment ? "SANAI · Tarea" : "SANAI"}
               </p>
               {isDevelopment && message.agent && (
                 <span className="rounded-full border border-border px-1.5 py-0.5 text-[10px] text-muted">

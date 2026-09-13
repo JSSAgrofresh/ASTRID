@@ -83,7 +83,7 @@ export function CreateRepoDialog({ onClose, onCreated }: CreateRepoDialogProps) 
           <>
             <h2 className="text-lg font-semibold text-foreground">Crear repositorio</h2>
             <p className="mt-1 text-sm text-muted">
-              Se creará en GitHub y se clonará automáticamente a ANAI.
+              Se creará en GitHub y se clonará automáticamente a SANAI.
             </p>
 
             <div className="mt-5 space-y-4">
@@ -163,7 +163,7 @@ export function CreateRepoDialog({ onClose, onCreated }: CreateRepoDialogProps) 
           <>
             <h2 className="text-lg font-semibold text-foreground">Confirmar creación</h2>
             <p className="mt-1 text-sm text-muted">
-              ANAI va a ejecutar exactamente esto — revisa antes de continuar.
+              SANAI va a ejecutar exactamente esto — revisa antes de continuar.
             </p>
 
             <dl className="mt-5 space-y-2 rounded-xl border border-border bg-surface-2 p-4 text-sm">

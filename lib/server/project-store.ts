@@ -5,7 +5,7 @@ import { PROJECT_WORKSPACES } from "./project-workspaces";
 export type { StoredProject };
 
 /**
- * Server-side registry of projects ANAI knows about — backed by SQLite
+ * Server-side registry of projects SANAI knows about — backed by SQLite
  * (see `db/project-repository.ts`), replacing the old hardcoded
  * `PROJECT_WORKSPACES` allowlist as the primary source of truth.
  * `workspace.ts#resolveProjectWorkspace` reads from this registry now, so
@@ -32,9 +32,9 @@ const LEGACY_PROJECT_SEEDS: ReadonlyArray<Omit<StoredProject, "status" | "create
   {
     projectId: "astrid",
     owner: "JSSAgrofresh",
-    repoName: "ANAI",
+    repoName: "SANAI",
     fullName: "JSSAgrofresh/ASTRID",
-    displayName: "ANAI",
+    displayName: "SANAI",
     workspacePath: PROJECT_WORKSPACES.find((p) => p.projectId === "astrid")!.workspacePath,
     defaultBranch: "main",
     visibility: "public",
